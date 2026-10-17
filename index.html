@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>María Bonita Store</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Lora:wght@400;600&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --rosa-claro:#fde3e4; --rosa:#ff9a9a; --rosa-fuerte:#f2767f; --gris:#5a5a5a;
+  --verde:#3f6b66; --crema:#fffaf7; --rojo:#c8283f; --borde:#f1d5d6; --ok:#2e8b57;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Poppins',sans-serif;background:var(--crema);color:#333;min-height:100vh}
+button{font-family:inherit;cursor:pointer;border:none}
+input,select,textarea{font-family:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--borde);border-radius:10px;width:100%;background:#fff}
+textarea{resize:vertical;min-height:80px}
+label{font-size:13px;color:var(--gris);display:block;margin:12px 0 4px}
+.hidden{display:none!important}
+
+/* Encabezado */
+header.top{background:linear-gradient(90deg,#fff 0%,var(--rosa-claro) 45%,var(--rosa) 100%);padding:14px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
+.brand img{height:64px;width:64px;object-fit:contain;border-radius:50%}
+.brand .t1{font-family:'Kaushan Script',cursive;font-size:30px;color:var(--gris);line-height:1}
+.brand .t2{font-family:'Lora',serif;letter-spacing:6px;font-size:12px;color:var(--verde);margin-top:4px}
+.search{flex:1;min-width:180px;max-width:360px;margin-left:auto}
+.search input{border-radius:30px;border:1px solid #fff;background:rgba(255,255,255,.85)}
+
+/* Pestañas */
+nav.tabs{display:flex;gap:8px;padding:12px 20px;overflow-x:auto;background:#fff;border-bottom:1px solid var(--borde);position:sticky;top:0;z-index:20}
+nav.tabs button{background:#fff;border:1px solid var(--borde);color:var(--gris);padding:8px 18px;border-radius:30px;font-size:14px;white-space:nowrap}
+nav.tabs button.on{background:var(--rosa-fuerte);border-color:var(--rosa-fuerte);color:#fff}
+nav.tabs button.ofertas{color:var(--rojo);border-color:var(--rojo)}
+nav.tabs button.ofertas.on{background:var(--rojo);color:#fff}
+
+main{max-width:1150px;margin:0 auto;padding:20px}
+h2.grupo{font-family:'Lora',serif;font-weight:600;font-size:20px;color:var(--verde);margin:26px 0 12px;display:flex;align-items:center;gap:10px}
+h2.grupo::after{content:"";flex:1;height:1px;background:var(--borde)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px}
+.card{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.06);cursor:pointer;position:relative;transition:transform .15s}
+.card:hover{transform:translateY(-3px)}
+.card .img{aspect-ratio:1/1;background:#f4f0ee center/cover no-repeat}
+.card .info{padding:12px}
+.card .nom{font-size:14px;font-weight:500;line-height:1.3;min-height:36px}
+.card .meta{font-size:12px;color:#888;margin-top:2px}
+.precio{margin-top:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.precio b{font-size:18px;color:#222}
+.precio s{font-size:13px;color:#999}
+.pct{background:var(--rojo);color:#fff;font-size:12px;padding:2px 7px;border-radius:5px}
+.badge{position:absolute;top:10px;left:10px;background:var(--rojo);color:#fff;font-size:11px;font-weight:600;padding:4px 9px;border-radius:6px}
+.badge.vend{background:#444}
+.card.sold .img{filter:grayscale(1);opacity:.55}
+.card.sold .precio b{color:#999}
+.cd{font-size:12px;color:var(--rojo);font-weight:600;margin-top:4px}
+.vacio{text-align:center;color:#999;padding:60px 10px}
+
+/* Modales */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:50;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:20px}
+.modal{background:#fff;border-radius:16px;width:100%;max-width:560px;padding:20px;margin:auto;position:relative}
+.modal h3{font-family:'Lora',serif;color:var(--verde);margin-bottom:6px}
+.cerrar{position:absolute;top:10px;right:14px;background:none;font-size:26px;color:#888}
+.det-img{width:100%;aspect-ratio:1/1;border-radius:12px;background:#f4f0ee center/contain no-repeat}
+.minis{display:flex;gap:8px;margin:10px 0}
+.minis div{width:56px;height:56px;border-radius:8px;background:#f4f0ee center/cover;border:2px solid transparent;cursor:pointer}
+.minis div.on{border-color:var(--rosa-fuerte)}
+.btn{padding:12px 18px;border-radius:12px;font-size:15px;font-weight:500}
+.btn.wa{background:#25d366;color:#fff;width:100%;margin-top:14px;font-size:16px}
+.btn.wa[disabled]{background:#bbb}
+.btn.pri{background:var(--rosa-fuerte);color:#fff}
+.btn.sec{background:#fff;border:1px solid var(--borde);color:var(--gris)}
+.btn.peligro{background:#fff;border:1px solid var(--rojo);color:var(--rojo)}
+.fila{display:flex;gap:10px}
+.fila>*{flex:1}
+
+/* Admin */
+.admin-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.chip{background:#fff;border:1px solid var(--borde);padding:8px 14px;border-radius:30px;font-size:13px;color:var(--gris)}
+.chip.on{background:var(--verde);color:#fff;border-color:var(--verde)}
+.tabla-wrap{overflow-x:auto;background:#fff;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:820px}
+th{background:var(--rosa-claro);color:var(--gris);text-align:left;padding:10px;font-weight:500}
+td{padding:8px 10px;border-top:1px solid #f3e9e9;vertical-align:middle}
+td img{width:48px;height:48px;object-fit:cover;border-radius:8px;background:#f4f0ee}
+.est{padding:3px 9px;border-radius:20px;font-size:12px;white-space:nowrap}
+.est.disponible{background:#dff3e8;color:var(--ok)}
+.est.vendido{background:#eee;color:#555}
+.est.baja{background:#ffe8d6;color:#a6561a}
+.acc{display:flex;gap:6px;flex-wrap:wrap}
+.acc button{padding:6px 10px;border-radius:8px;font-size:12px;border:1px solid var(--borde);background:#fff;color:var(--gris)}
+.acc .vendido{background:var(--ok);color:#fff;border-color:var(--ok)}
+.acc .del{color:var(--rojo);border-color:var(--rojo)}
+.fotos-prev{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.fotos-prev div{width:70px;height:70px;border-radius:8px;background:#f4f0ee center/cover;position:relative}
+.fotos-prev button{position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;background:var(--rojo);color:#fff;font-size:13px}
+.login{max-width:380px;margin:60px auto;background:#fff;padding:24px;border-radius:16px;box-shadow:0 2px 14px rgba(0,0,0,.07)}
+.aviso{background:#fff3cd;border:1px solid #f0d98a;padding:14px;border-radius:12px;margin:20px;font-size:14px}
+.err{color:var(--rojo);font-size:13px;margin-top:8px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 18px;border-radius:30px;font-size:14px;z-index:99}
+footer{text-align:center;padding:30px;color:#999;font-size:12px}
+@media (max-width:600px){
+  main{padding:14px}
+  h2.grupo{font-size:17px;margin:20px 0 10px}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .card .info{padding:9px 10px 11px}
+  .card .nom{font-size:13px;min-height:34px;overflow-wrap:anywhere}
+  .card .meta{font-size:11px}
+  .precio{gap:5px;margin-top:4px}
+  .precio b{font-size:16px}
+  .precio s{font-size:12px}
+  .pct{font-size:11px;padding:1px 5px}
+  .badge{top:7px;left:7px;font-size:10px;padding:3px 7px}
+  .cd{font-size:11px}
+  .overlay{padding:10px}
+  .modal{padding:16px}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, doc, onSnapshot, setDoc, updateDoc, deleteDoc, runTransaction }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+/* ============ CONFIGURACIÓN (pega aquí los datos de TU proyecto nuevo de Firebase) ============ */
+const firebaseConfig = {
+  apiKey: "AIzaSyAh9sMLZmJeEFuKMCtN5-V4qDZrhs_mJuM",
+  authDomain: "maria-bonita-store-7e284.firebaseapp.com",
+  projectId: "maria-bonita-store-7e284",
+  storageBucket: "maria-bonita-store-7e284.firebasestorage.app",
+  messagingSenderId: "1088584480095",
+  appId: "1:1088584480095:web:153053132469bafd0232ea"
+};
+const WHATSAPP = "528332076391";
+const PREFIJO_CODIGO = "MB-";
+const CATS_FIJAS = [{id:"mujer",nombre:"Mujer"},{id:"hombre",nombre:"Hombre"}];
+const MAX_FOTOS = 3;
+/* ================================================================================================ */
+
+const configurado = !firebaseConfig.apiKey.startsWith("PEGA");
+let db, auth;
+if (configurado) { const app = initializeApp(firebaseConfig); db = getFirestore(app); auth = getAuth(app); }
+
+const S = { productos:[], tabsExtra:[], user:null, authListo:false, tab:"todo", q:"", filtroAdmin:"disponible", cargado:false };
+const $app = document.getElementById("app");
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const mxn = n => "$" + Number(n).toLocaleString("es-MX",{maximumFractionDigits:2});
+const fechaCorta = ms => new Date(ms).toLocaleDateString("es-MX",{day:"numeric",month:"short",year:"numeric"});
+const todasCats = () => [...CATS_FIJAS, ...S.tabsExtra];
+const nombreCat = id => (todasCats().find(c => c.id === id) || {nombre:id}).nombre;
+const tipoKey = t => String(t ?? "").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ");
+const tipoLabel = t => { const x = String(t ?? "").trim().replace(/\s+/g," ").toLowerCase(); return x ? x.charAt(0).toUpperCase()+x.slice(1) : ""; };
+const esAdminRuta = () => location.hash.startsWith("#admin");
+
+function toast(msg){ const t=document.createElement("div"); t.className="toast"; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),2500); }
+
+/* ---------- Ofertas ---------- */
+function ofertaActiva(p){ const d=p.descuento; return !!(d && d.valor>0 && (!d.fin || d.fin>Date.now())); }
+function precioFinal(p){
+  if(!ofertaActiva(p)) return p.precio;
+  const d=p.descuento;
+  const v = d.modo==="pct" ? p.precio*(1-d.valor/100) : d.valor;
+  return Math.max(0, Math.round(v*100)/100);
+}
+function pctOferta(p){ return Math.round((1 - precioFinal(p)/p.precio)*100); }
+function fmtCuenta(ms){
+  let s=Math.max(0,Math.floor(ms/1000)); const d=Math.floor(s/86400); s%=86400;
+  const h=Math.floor(s/3600); s%=3600; const m=Math.floor(s/60); s%=60;
+  const p=n=>String(n).padStart(2,"0");
+  return (d?d+"d ":"")+p(h)+":"+p(m)+":"+p(s);
+}
+setInterval(()=>{
+  document.querySelectorAll("[data-fin]").forEach(el=>{
+    const r=Number(el.dataset.fin)-Date.now();
+    if(r<=0){ render(); return; }
+    el.textContent="⚡ Termina en "+fmtCuenta(r);
+  });
+},1000);
+
+/* ---------- Datos en tiempo real ---------- */
+if (configurado) {
+  onSnapshot(collection(db,"productos"), snap => {
+    S.productos = snap.docs.map(d => ({id:d.id, ...d.data()}));
+    S.cargado = true; render();
+  }, e => { console.error(e); S.cargado=true; render(); });
+  onSnapshot(doc(db,"config","tabs"), snap => {
+    S.tabsExtra = snap.exists() ? (snap.data().lista || []) : [];
+    render();
+  });
+  onAuthStateChanged(auth, u => { S.user=u; S.authListo=true; render(); });
+}
+window.addEventListener("hashchange", render);
+
+/* ---------- Render principal ---------- */
+function render(){
+  if(document.querySelector(".overlay") && !render.forzar) return; // no cerrar modales abiertos
+  if(!configurado){ $app.innerHTML = headerHTML(false) + `<div class="aviso"><b>Falta conectar Firebase.</b><br>Abre <code>index.html</code>, busca <code>firebaseConfig</code> y pega los datos de tu proyecto nuevo.</div>`; return; }
+  if(esAdminRuta()) renderAdmin(); else renderCliente();
+}
+function rerender(){ render.forzar=true; render(); render.forzar=false; }
+
+function headerHTML(admin){
+  return `<header class="top">
+    <a class="brand" href="${admin?'#':'#'}">
+      <img src="logo.png" alt="" onerror="this.style.display='none'">
+      <div><div class="t1">María Bonita</div><div class="t2">STORE</div></div>
+    </a>
+    ${admin?'':`<div class="search"><input id="q" type="search" placeholder="Buscar producto…" value="${esc(S.q)}"></div>`}
+  </header>`;
+}
+
+/* ================= PANEL CLIENTE ================= */
+function renderCliente(){
+  const tabs = [{id:"todo",nombre:"Todo"}, ...todasCats(), {id:"ofertas",nombre:"🔥 Ofertas"}];
+  let lista = S.productos.filter(p => p.estado !== "baja");
+  if(S.tab==="ofertas") lista = lista.filter(p => p.estado==="disponible" && ofertaActiva(p));
+  else if(S.tab!=="todo") lista = lista.filter(p => p.categoria===S.tab);
+  const q = S.q.trim().toLowerCase();
+  if(q) lista = lista.filter(p => [p.nombre,p.tipo,p.codigo,p.talla,p.descripcion].join(" ").toLowerCase().includes(q));
+
+  const disp = lista.filter(p => p.estado==="disponible");
+  const vend = lista.filter(p => p.estado==="vendido");
+
+  // agrupar disponibles por tipo, sin distinguir mayúsculas ni acentos (y por categoría en "Todo")
+  const grupos = {};
+  disp.forEach(p => {
+    const tk = tipoKey(p.tipo) || "otros";
+    const tl = tipoLabel(p.tipo) || "Otros";
+    const gk = S.tab==="todo" ? p.categoria + "|" + tk : tk;
+    const gl = S.tab==="todo" ? `${nombreCat(p.categoria)} · ${tl}` : tl;
+    (grupos[gk] ||= {label:gl, items:[]}).items.push(p);
+  });
+  const claves = Object.keys(grupos).sort((a,b)=>grupos[a].label.localeCompare(grupos[b].label,"es"));
+
+  let html = headerHTML(false);
+  html += `<nav class="tabs">${tabs.map(t=>`<button data-tab="${esc(t.id)}" class="${t.id==='ofertas'?'ofertas ':''}${S.tab===t.id?'on':''}">${esc(t.nombre)}</button>`).join("")}</nav><main>`;
+  if(!S.cargado) html += `<div class="vacio">Cargando…</div>`;
+  else if(!disp.length && !vend.length) html += `<div class="vacio">No hay productos en esta sección.</div>`;
+  else {
+    claves.forEach(k => { html += `<h2 class="grupo">${esc(grupos[k].label)}</h2><div class="grid">${grupos[k].items.map(cardHTML).join("")}</div>`; });
+    if(vend.length) html += `<h2 class="grupo">Vendidos</h2><div class="grid">${vend.map(cardHTML).join("")}</div>`;
+  }
+  html += `</main><footer>María Bonita Store · Tampico, Tamps.</footer>`;
+  $app.innerHTML = html;
+
+  const qi = document.getElementById("q");
+  if(qi) qi.addEventListener("input", e => { S.q=e.target.value; const pos=e.target.selectionStart; renderCliente(); const n=document.getElementById("q"); n.focus(); n.setSelectionRange(pos,pos); });
+  $app.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => { S.tab=b.dataset.tab; renderCliente(); });
+  $app.querySelectorAll(".card").forEach(c => c.onclick = () => abrirDetalle(c.dataset.id));
+}
+
+function cardHTML(p){
+  const vend = p.estado==="vendido", of = !vend && ofertaActiva(p);
+  const foto = (p.fotos||[])[0] || "";
+  return `<div class="card ${vend?'sold':''}" data-id="${p.id}">
+    <div class="img" style="background-image:url('${foto}')"></div>
+    ${vend?'<span class="badge vend">VENDIDO</span>':of?`<span class="badge">${p.descuento.fin&&p.descuento.relampago?'⚡ RELÁMPAGO':'OFERTA'}</span>`:''}
+    <div class="info">
+      <div class="nom">${esc(p.nombre)}</div>
+      <div class="meta">${p.talla?'Talla '+esc(p.talla):'&nbsp;'}</div>
+      <div class="precio">${of?`<b>${mxn(precioFinal(p))}</b><s>${mxn(p.precio)}</s><span class="pct">-${pctOferta(p)}%</span>`:`<b>${mxn(p.precio)}</b>`}</div>
+      ${of&&p.descuento.fin&&p.descuento.relampago?`<div class="cd" data-fin="${p.descuento.fin}">⚡ Termina en ${fmtCuenta(p.descuento.fin-Date.now())}</div>`:''}
+    </div></div>`;
+}
+
+function abrirDetalle(id){
+  const p = S.productos.find(x=>x.id===id); if(!p) return;
+  const vend = p.estado==="vendido", of = !vend && ofertaActiva(p);
+  const fotos = p.fotos||[]; let actual = 0;
+  const msg = `Hola, me interesa este producto: ${p.nombre} (Código: ${p.codigo}${p.talla?', Talla '+p.talla:''})`;
+  const url = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`;
+  const ov = document.createElement("div"); ov.className="overlay";
+  ov.innerHTML = `<div class="modal"><button class="cerrar">×</button>
+    <div class="det-img" id="dimg"></div>
+    <div class="minis">${fotos.length>1?fotos.map((f,i)=>`<div data-i="${i}" style="background-image:url('${f}')" class="${i===0?'on':''}"></div>`).join(""):''}</div>
+    <h3>${esc(p.nombre)}</h3>
+    <div class="meta" style="color:#888;font-size:13px">${esc(nombreCat(p.categoria))}${p.tipo?' · '+esc(tipoLabel(p.tipo)):''}${p.talla?' · Talla '+esc(p.talla):''} · ${esc(p.codigo)}</div>
+    <div class="precio">${of?`<b style="font-size:24px">${mxn(precioFinal(p))}</b><s>${mxn(p.precio)}</s><span class="pct">-${pctOferta(p)}%</span>`:`<b style="font-size:24px">${mxn(p.precio)}</b>`}</div>
+    ${of&&p.descuento.fin&&p.descuento.relampago?`<div class="cd" data-fin="${p.descuento.fin}"></div>`:''}
+    ${p.descripcion?`<p style="margin-top:12px;font-size:14px;color:#555;white-space:pre-line">${esc(p.descripcion)}</p>`:''}
+    ${vend?`<button class="btn wa" disabled>Producto vendido</button>`:`<a href="${url}" target="_blank" rel="noopener"><button class="btn wa">💬 Me interesa</button></a>`}
+  </div>`;
+  document.body.appendChild(ov);
+  const pinta = () => { ov.querySelector("#dimg").style.backgroundImage = fotos[actual] ? `url('${fotos[actual]}')` : "none"; ov.querySelectorAll(".minis div").forEach((d,i)=>d.classList.toggle("on",i===actual)); };
+  pinta();
+  ov.querySelectorAll(".minis div").forEach(d => d.onclick = () => { actual=+d.dataset.i; pinta(); });
+  const cerrar = () => { ov.remove(); };
+  ov.querySelector(".cerrar").onclick = cerrar;
+  ov.onclick = e => { if(e.target===ov) cerrar(); };
+}
+
+/* ================= PANEL ADMIN ================= */
+function renderAdmin(){
+  if(!S.authListo){ $app.innerHTML = headerHTML(true)+`<div class="vacio">Cargando…</div>`; return; }
+  if(!S.user){
+    $app.innerHTML = headerHTML(true)+`<div class="login"><h3 style="font-family:Lora;color:var(--verde)">Panel de administración</h3>
+      <label>Correo</label><input id="em" type="email" autocomplete="username">
+      <label>Contraseña</label><input id="pw" type="password" autocomplete="current-password">
+      <button class="btn pri" style="width:100%;margin-top:16px" id="ent">Entrar</button><div class="err" id="er"></div>
+      <p style="margin-top:14px;font-size:13px"><a href="#">← Ver catálogo</a></p></div>`;
+    const entrar = async () => { try{ await signInWithEmailAndPassword(auth, em.value.trim(), pw.value); }catch(e){ er.textContent="Correo o contraseña incorrectos."; } };
+    ent.onclick = entrar; pw.onkeydown = e => { if(e.key==="Enter") entrar(); };
+    return;
+  }
+  const P = S.productos;
+  const cuenta = {
+    disponible: P.filter(p=>p.estado==="disponible").length,
+    vendido: P.filter(p=>p.estado==="vendido").length,
+    ofertas: P.filter(p=>p.estado==="disponible" && ofertaActiva(p)).length,
+    baja: P.filter(p=>p.estado==="baja").length
+  };
+  let lista = P.slice();
+  const f = S.filtroAdmin;
+  if(f==="ofertas") lista = lista.filter(p=>p.estado==="disponible" && ofertaActiva(p));
+  else if(f!=="todos") lista = lista.filter(p=>p.estado===f);
+  const q = S.q.trim().toLowerCase();
+  if(q) lista = lista.filter(p => [p.nombre,p.tipo,p.codigo,p.talla].join(" ").toLowerCase().includes(q));
+  lista.sort((a,b)=> (f==="vendido" ? (b.fechaVenta||0)-(a.fechaVenta||0) : (b.creado||0)-(a.creado||0)));
+
+  const chips = [["disponible",`Disponibles (${cuenta.disponible})`],["vendido",`Vendidos (${cuenta.vendido})`],["ofertas",`Ofertas activas (${cuenta.ofertas})`],["baja",`Dados de baja (${cuenta.baja})`],["todos","Todos"]];
+  $app.innerHTML = headerHTML(true) + `<main>
+    <div class="admin-bar">
+      <button class="btn pri" id="nuevo">+ Agregar producto</button>
+      <button class="btn sec" id="pest">Pestañas</button>
+      <a href="#"><button class="btn sec">Ver catálogo</button></a>
+      <button class="btn sec" id="salir" style="margin-left:auto">Salir</button>
+    </div>
+    <div class="admin-bar">${chips.map(([k,t])=>`<button class="chip ${f===k?'on':''}" data-f="${k}">${t}</button>`).join("")}
+      <input id="qa" type="search" placeholder="Buscar…" value="${esc(S.q)}" style="max-width:220px;margin-left:auto;border-radius:30px"></div>
+    <div class="tabla-wrap"><table><thead><tr><th></th><th>Código</th><th>Producto</th><th>Talla</th><th>Precio</th><th>Uds.</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>
+    ${lista.map(filaAdmin).join("") || `<tr><td colspan="8" class="vacio">Sin productos en esta vista.</td></tr>`}
+    </tbody></table></div></main>`;
+
+  $app.querySelectorAll("[data-f]").forEach(b=>b.onclick=()=>{S.filtroAdmin=b.dataset.f;renderAdmin();});
+  document.getElementById("qa").oninput = e => { S.q=e.target.value; const pos=e.target.selectionStart; renderAdmin(); const n=document.getElementById("qa"); n.focus(); n.setSelectionRange(pos,pos); };
+  document.getElementById("nuevo").onclick = () => formProducto();
+  document.getElementById("pest").onclick = gestionarPestanas;
+  document.getElementById("salir").onclick = () => signOut(auth);
+  $app.querySelectorAll("[data-a]").forEach(b => b.onclick = () => accion(b.dataset.a, b.dataset.id));
+}
+
+function filaAdmin(p){
+  const of = p.estado==="disponible" && ofertaActiva(p);
+  const estTxt = p.estado==="vendido" ? `Vendido ${p.fechaVenta?fechaCorta(p.fechaVenta):''}` : p.estado==="baja" ? "De baja" : "Disponible";
+  const b = (a,t,cls="") => `<button data-a="${a}" data-id="${p.id}" class="${cls}">${t}</button>`;
+  let acc = "";
+  if(p.estado==="disponible") acc = b("vender","Vendido","vendido")+b("editar","Editar")+b("oferta","Oferta")+b("baja","Dar de baja");
+  else if(p.estado==="vendido") acc = b("deshacer","Deshacer venta")+b("editar","Editar")+b("baja","Dar de baja");
+  else acc = b("restaurar","Restaurar")+b("editar","Editar")+b("borrar","Eliminar","del");
+  return `<tr>
+    <td><img src="${(p.fotos||[])[0]||''}" alt=""></td>
+    <td>${esc(p.codigo)}</td>
+    <td><b>${esc(p.nombre)}</b><br><span style="color:#999">${esc(nombreCat(p.categoria))}${p.tipo?' · '+esc(tipoLabel(p.tipo)):''}</span></td>
+    <td>${esc(p.talla||'—')}</td>
+    <td>${of?`<b>${mxn(precioFinal(p))}</b><br><s style="color:#999">${mxn(p.precio)}</s>${p.descuento.relampago?' ⚡':''}`:mxn(p.precio)}</td>
+    <td>${p.unidades ?? 0}</td>
+    <td><span class="est ${p.estado}">${estTxt}</span></td>
+    <td><div class="acc">${acc}</div></td></tr>`;
+}
+
+async function accion(a,id){
+  const p = S.productos.find(x=>x.id===id); if(!p) return;
+  const ref = doc(db,"productos",id);
+  try{
+    if(a==="vender"){
+      const u = Math.max(0,(p.unidades||1)-1), ahora = Date.now();
+      await updateDoc(ref,{ unidades:u, ventas:[...(p.ventas||[]),ahora], fechaVenta:ahora, estado:u===0?"vendido":"disponible" });
+      toast(u===0?"Marcado como vendido":`Venta registrada. Quedan ${u}`);
+    }
+    else if(a==="deshacer"){
+      const v=[...(p.ventas||[])]; v.pop();
+      await updateDoc(ref,{ unidades:(p.unidades||0)+1, ventas:v, fechaVenta:v[v.length-1]||null, estado:"disponible" });
+      toast("Venta deshecha");
+    }
+    else if(a==="baja"){ if(confirm(`¿Dar de baja "${p.nombre}"? Deja de verse en el catálogo, pero lo conservas en "Dados de baja".`)){ await updateDoc(ref,{estado:"baja", estadoPrevio:p.estado}); toast("Dado de baja"); } }
+    else if(a==="restaurar"){ await updateDoc(ref,{estado: p.estadoPrevio==="vendido"?"vendido":(p.unidades>0?"disponible":"vendido")}); toast("Restaurado"); }
+    else if(a==="borrar"){ if(confirm(`¿Eliminar "${p.nombre}" para siempre? No se puede deshacer.`)){ await deleteDoc(ref); toast("Eliminado"); } }
+    else if(a==="editar") formProducto(p);
+    else if(a==="oferta") formOferta(p);
+  }catch(e){ console.error(e); alert("No se pudo guardar. Revisa tu conexión y las reglas de Firestore."); }
+}
+
+/* ---------- Formulario de producto ---------- */
+async function comprimir(file){
+  const img = await createImageBitmap(file);
+  const s = Math.min(1, 800/Math.max(img.width,img.height));
+  const c = document.createElement("canvas"); c.width=Math.round(img.width*s); c.height=Math.round(img.height*s);
+  c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+  return c.toDataURL("image/jpeg",0.72);
+}
+function modal(html){
+  const ov=document.createElement("div"); ov.className="overlay";
+  ov.innerHTML=`<div class="modal"><button class="cerrar">×</button>${html}</div>`;
+  document.body.appendChild(ov);
+  const cerrar=()=>ov.remove();
+  ov.querySelector(".cerrar").onclick=cerrar;
+  return {ov,cerrar};
+}
+function formProducto(p){
+  const edit = !!p; let fotos = edit ? [...(p.fotos||[])] : [];
+  const tipos = [...new Set(S.productos.map(x=>tipoLabel(x.tipo)).filter(Boolean))];
+  const {ov,cerrar} = modal(`<h3>${edit?'Editar producto':'Nuevo producto'}</h3>
+    <label>Nombre</label><input id="f_nom" value="${esc(p?.nombre)}">
+    <div class="fila"><div><label>Categoría</label><select id="f_cat">${todasCats().map(c=>`<option value="${esc(c.id)}" ${p?.categoria===c.id?'selected':''}>${esc(c.nombre)}</option>`).join("")}</select></div>
+    <div><label>Tipo (ej. Perfumes, Tenis, Ropa)</label><input id="f_tipo" list="tipos" value="${esc(tipoLabel(p?.tipo))}"><datalist id="tipos">${tipos.map(t=>`<option value="${esc(t)}">`).join("")}</datalist></div></div>
+    <div class="fila"><div><label>Talla / medida (opcional)</label><input id="f_talla" value="${esc(p?.talla)}"></div>
+    <div><label>Precio (MXN)</label><input id="f_precio" type="number" min="0" step="0.01" value="${p?.precio ?? ''}"></div>
+    <div><label>Unidades</label><input id="f_uds" type="number" min="1" step="1" value="${p?.unidades ?? 1}"></div></div>
+    <label>Descripción (opcional)</label><textarea id="f_desc">${esc(p?.descripcion)}</textarea>
+    <label>Fotos (máx. ${MAX_FOTOS}, se comprimen solas)</label><input id="f_fotos" type="file" accept="image/*" multiple>
+    <div class="fotos-prev" id="prev"></div>
+    <div class="err" id="f_err"></div>
+    <button class="btn pri" style="width:100%;margin-top:16px" id="f_ok">Guardar</button>`);
+  const pintaFotos = () => { const pv=ov.querySelector("#prev"); pv.innerHTML=fotos.map((f,i)=>`<div style="background-image:url('${f}')"><button data-x="${i}">×</button></div>`).join(""); pv.querySelectorAll("[data-x]").forEach(b=>b.onclick=()=>{fotos.splice(+b.dataset.x,1);pintaFotos();}); };
+  pintaFotos();
+  ov.querySelector("#f_fotos").onchange = async e => {
+    for(const file of e.target.files){ if(fotos.length>=MAX_FOTOS) break; try{ fotos.push(await comprimir(file)); }catch{} }
+    e.target.value=""; pintaFotos();
+  };
+  ov.querySelector("#f_ok").onclick = async () => {
+    const g = id => ov.querySelector("#"+id).value.trim();
+    const err = m => ov.querySelector("#f_err").textContent = m;
+    if(!g("f_nom")) return err("Falta el nombre.");
+    if(!(parseFloat(g("f_precio"))>=0) || g("f_precio")==="") return err("Falta el precio.");
+    if(!fotos.length) return err("Agrega al menos una foto.");
+    if(fotos.join("").length > 850000) return err("Las fotos pesan demasiado. Quita una o usa fotos más sencillas.");
+    const uds = Math.max(1, parseInt(g("f_uds"))||1);
+    const base = { nombre:g("f_nom"), categoria:g("f_cat"), tipo:tipoLabel(g("f_tipo")), talla:g("f_talla"), descripcion:g("f_desc"), precio:parseFloat(g("f_precio")), fotos };
+    ov.querySelector("#f_ok").disabled = true;
+    try{
+      if(edit){
+        const extra = (p.estado==="vendido" && uds>0) ? {unidades:uds, estado:"disponible"} : (p.estado==="disponible" ? {unidades:uds} : {});
+        await updateDoc(doc(db,"productos",p.id), {...base, ...extra});
+      } else {
+        const n = await runTransaction(db, async tx => {
+          const r = doc(db,"config","contador"); const s = await tx.get(r);
+          const nuevo = (s.exists()? s.data().n : 0) + 1; tx.set(r,{n:nuevo}); return nuevo;
+        });
+        const codigo = PREFIJO_CODIGO + String(n).padStart(3,"0");
+        await setDoc(doc(db,"productos",codigo), { ...base, codigo, unidades:uds, estado:"disponible", descuento:null, ventas:[], fechaVenta:null, creado:Date.now() });
+      }
+      cerrar(); toast("Guardado");
+    }catch(e){ console.error(e); err("No se pudo guardar. Revisa las reglas de Firestore."); ov.querySelector("#f_ok").disabled=false; }
+  };
+}
+
+/* ---------- Oferta / descuento ---------- */
+function formOferta(p){
+  const d = p.descuento || {modo:"pct",valor:"",relampago:false,fin:null};
+  const aLocal = ms => { if(!ms) return ""; const t=new Date(ms-new Date(ms).getTimezoneOffset()*60000); return t.toISOString().slice(0,16); };
+  const {ov,cerrar} = modal(`<h3>Oferta · ${esc(p.nombre)}</h3><div style="font-size:13px;color:#888">Precio normal: ${mxn(p.precio)}</div>
+    <div class="fila"><div><label>Tipo de descuento</label><select id="o_modo"><option value="pct" ${d.modo==='pct'?'selected':''}>Porcentaje (%)</option><option value="fijo" ${d.modo==='fijo'?'selected':''}>Precio final fijo ($)</option></select></div>
+    <div><label>Valor</label><input id="o_val" type="number" min="0" step="0.01" value="${d.valor}"></div></div>
+    <label style="display:flex;gap:8px;align-items:center"><input id="o_rel" type="checkbox" style="width:auto" ${d.relampago?'checked':''}> ⚡ Oferta relámpago (con cuenta regresiva)</label>
+    <label>Termina el (opcional; obligatorio si es relámpago)</label><input id="o_fin" type="datetime-local" value="${aLocal(d.fin)}">
+    <div class="err" id="o_err"></div>
+    <div class="fila" style="margin-top:16px"><button class="btn peligro" id="o_quitar">Quitar oferta</button><button class="btn pri" id="o_ok">Guardar</button></div>`);
+  ov.querySelector("#o_quitar").onclick = async () => { await updateDoc(doc(db,"productos",p.id),{descuento:null}); cerrar(); toast("Oferta quitada"); };
+  ov.querySelector("#o_ok").onclick = async () => {
+    const modo=ov.querySelector("#o_modo").value, valor=parseFloat(ov.querySelector("#o_val").value);
+    const rel=ov.querySelector("#o_rel").checked, finTxt=ov.querySelector("#o_fin").value;
+    const err=m=>ov.querySelector("#o_err").textContent=m;
+    if(!(valor>0)) return err("Pon un valor mayor a 0.");
+    if(modo==="pct" && valor>=100) return err("El porcentaje debe ser menor a 100.");
+    if(modo==="fijo" && valor>=p.precio) return err("El precio de oferta debe ser menor al precio normal.");
+    if(rel && !finTxt) return err("La oferta relámpago necesita fecha y hora de fin.");
+    const fin = finTxt ? new Date(finTxt).getTime() : null;
+    if(fin && fin<=Date.now()) return err("La fecha de fin ya pasó.");
+    await updateDoc(doc(db,"productos",p.id),{descuento:{modo,valor,relampago:rel,fin}});
+    cerrar(); toast("Oferta guardada");
+  };
+}
+
+/* ---------- Pestañas personalizadas ---------- */
+function gestionarPestanas(){
+  const {ov,cerrar} = modal(`<h3>Pestañas del catálogo</h3>
+    <p style="font-size:13px;color:#888">Mujer, Hombre y Ofertas son fijas. Aquí creas las demás (ej. Hogar, Navidad).</p>
+    <div id="lt" style="margin:12px 0"></div>
+    <div class="fila"><input id="nt" placeholder="Nueva pestaña"><button class="btn pri" id="at" style="flex:0 0 auto">Agregar</button></div>`);
+  const guarda = async lista => { await setDoc(doc(db,"config","tabs"),{lista}); };
+  const pinta = () => {
+    ov.querySelector("#lt").innerHTML = S.tabsExtra.map((t,i)=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f3e9e9">${esc(t.nombre)}<button data-d="${i}" class="btn peligro" style="padding:4px 10px;font-size:12px">Quitar</button></div>`).join("") || `<div style="color:#999">Aún no hay pestañas extra.</div>`;
+    ov.querySelectorAll("[data-d]").forEach(b=>b.onclick=async()=>{
+      const t=S.tabsExtra[+b.dataset.d]; const usados=S.productos.filter(p=>p.categoria===t.id).length;
+      if(usados && !confirm(`Hay ${usados} producto(s) en "${t.nombre}". Seguirán en "Todo" pero sin pestaña. ¿Quitarla?`)) return;
+      await guarda(S.tabsExtra.filter((_,i)=>i!==+b.dataset.d)); setTimeout(pinta,400);
+    });
+  };
+  pinta();
+  ov.querySelector("#at").onclick = async () => {
+    const nombre = ov.querySelector("#nt").value.trim(); if(!nombre) return;
+    const id = nombre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+    if(todasCats().some(c=>c.id===id)) return toast("Ya existe esa pestaña");
+    await guarda([...S.tabsExtra,{id,nombre}]); ov.querySelector("#nt").value=""; setTimeout(pinta,400);
+  };
+  ov.querySelector(".cerrar").onclick = () => { cerrar(); rerender(); };
+}
+
+render();
+</script>
+</body>
+</html>
